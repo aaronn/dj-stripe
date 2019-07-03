@@ -71,10 +71,13 @@ def subscriber_has_active_subscription(subscriber, plan=None):
 			return True
 	from .models import Customer
 
-	customer, created = Customer.get_or_create(subscriber)
-	if created or not customer.has_active_subscription(plan):
+	try:
+		customer = Customer.objects.get(subscriber_id=subscriber.id)
+		if not customer.has_active_subscription(plan):
+			return False
+		return True
+	except Customer.DoesNotExist:
 		return False
-	return True
 
 
 def get_supported_currency_choices(api_key):
